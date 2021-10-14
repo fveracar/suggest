@@ -23,8 +23,6 @@ if submitted:
     for j in range(1):
       kw_lists[i].append(kw_list[i])
 
-  st.write(kw_lists)	
-
   #create aditionnal seeed by appending a-z & 0-9 to it
   sugg_all_lists = []
   for k in range(len(kw_lists)):
@@ -33,8 +31,6 @@ if submitted:
         kw_lists[k].append(kw_lists[k][0]+' '+c+c2)
     for i in range(0,10):
       kw_lists[k].append(kw_lists[k][0]+' '+str(i))
-
-    st.write(kw_lists[k])
 
     
     #gett all suggestions from Google
@@ -48,9 +44,6 @@ if submitted:
       sugg_all.extend(sugg)
     
     sugg_all_lists.append(sugg_all)
-
-  st.write(len(sugg_all_lists))
-  st.write(sugg_all_lists)
 
   for sugg_list in range(len(sugg_all_lists)):
     #remove duplicated
