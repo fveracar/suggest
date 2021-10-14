@@ -12,8 +12,8 @@ def convert_df(df):
 
 #Get input from users
 with st.form('my_form'):
-  seed_kw = st.text_input('seed_kw') 
-  seed_kw2 = st.text_input('seed_kw2')
+  #seed_kw = st.text_input('seed_kw') 
+  #seed_kw2 = st.text_input('seed_kw2')
   consultas = st.text_area('Introduce una consulta por línea')
   country = st.text_input('Country', value='es')
 
@@ -22,24 +22,33 @@ with st.form('my_form'):
 if submitted:
   kw_list = consultas.split("\n") #almacenamos en una lista cada consulta ingresada por línea en el text area
   #convert seed keyword to list
-  keywords = [[seed_kw],[seed_kw2]]
+  kw_lists = []
+
+  #bucle para crear las lista de cada consulta e incluirla en la kw_lists
+  for i in range(len(kw_list)):
+    kw_lists.append([])
+    for j in range(1):
+      kw_lists[i].append(kw_list[i])
+
+  st.write(kw_lists)	
+
   #create aditionnal seeed by appending a-z & 0-9 to it
   sugg_all_lists = []
-  for k in range(len(keywords)):
+  for k in range(len(kw_lists)):
     for c in ascii_lowercase:
       for c2 in ascii_lowercase:
-        keywords[k].append(keywords[k][0]+' '+c+c2)
+        kw_lists[k].append(kw_lists[k][0]+' '+c+c2)
     for i in range(0,10):
-      keywords[k].append(keywords[k][0]+' '+str(i))
+      kw_lists[k].append(kw_lists[k][0]+' '+str(i))
 
-    st.write(keywords[k])
+    st.write(kw_lists[k])
 
     
     #gett all suggestions from Google
     sugg_all = []
     i=1
 
-    for kw in keywords[k]:
+    for kw in kw_lists[k]:
       r = requests.get('http://suggestqueries.google.com/complete/search?output=toolbar&hl={}&q={}'.format(country,kw))
       soup = BeautifulSoup(r.content, 'html.parser')
       sugg = [sugg['data'] for sugg in soup.find_all('suggestion')]
@@ -57,7 +66,7 @@ if submitted:
       st.write('There are no suggestion. The script can\'t work :(')
       
     #get search volume data 
-    #prepare keywords for encoding
+    #prepare kw_lists for encoding
     data = sugg_all_lists[sugg_list].str.replace(' ','%20').unique()
     #divide kws into chunks of kws
     chunks = [data[x:x+25] for x in range(0, len(data), 25)]
@@ -68,7 +77,7 @@ if submitted:
     #get data 
     for chunk in chunks:
       url = (
-          'https://db2.keywordsur.fr/keyword_surfer_keywords?country={}&keywords=[%22'.format(country)+
+          'https://db2.kw_listsur.fr/keyword_surfer_kw_lists?country={}&kw_lists=[%22'.format(country)+
           '%22,%22'.join(chunk)+
           '%22]'
       )
@@ -90,7 +99,7 @@ if submitted:
         .fillna(0)
     )
 
-    results.sort_values(by='volume',ascending=False).to_csv('data_' + keywords[sugg_list][0] +'.csv',index=False)
+    results.sort_values(by='volume',ascending=False).to_csv('data_' + kw_lists[sugg_list][0] +'.csv',index=False)
     results
 
     csv = convert_df(results)
@@ -98,6 +107,6 @@ if submitted:
     st.download_button(
         label="Descargar",
         data=csv,
-        file_name='data_' + keywords[sugg_list][0] +'.csv',
+        file_name='data_' + kw_lists[sugg_list][0] +'.csv',
         mime='text/csv',
     )
