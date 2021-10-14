@@ -5,11 +5,6 @@ from bs4 import BeautifulSoup
 from string import ascii_lowercase
 import json 
 
-@st.cache
-def convert_df(df):
-  return df.to_csv().encode('utf-8')
-
-
 #Get input from users
 with st.form('my_form'):
   consultas = st.text_area('Introduce una consulta por línea')
@@ -79,14 +74,15 @@ if submitted:
           '%22,%22'.join(chunk)+
           '%22]'
       )
-
-      r = requests.get(url)
+      error=False
       try:
+        r = requests.get(url)
         data = json.loads(r.text)
       except:
+        error = True
         continue
 
-      for key in data.keys():
+    #  for key in data.keys():
         results.loc[len(results)] = [key,data[key]['search_volume']]
 
     results = (
@@ -97,14 +93,8 @@ if submitted:
         .fillna(0)
     )
 
-    results.sort_values(by='volume',ascending=False).to_csv('data_' + kw_lists[sugg_list][0] +'.csv',index=False)
+    if error==True:
+      st.write('No se pudo obtener el volumen de búsquedas')
+
+    results.to_csv('data_' + kw_lists[sugg_list][0] +'.csv',index=False)
     results
-
-    csv = convert_df(results)
-
-    st.download_button(
-        label="Descargar",
-        data=csv,
-        file_name='data_' + kw_lists[sugg_list][0] +'.csv',
-        mime='text/csv',
-    )
