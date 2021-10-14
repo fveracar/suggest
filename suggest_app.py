@@ -12,8 +12,6 @@ def convert_df(df):
 
 #Get input from users
 with st.form('my_form'):
-  #seed_kw = st.text_input('seed_kw') 
-  #seed_kw2 = st.text_input('seed_kw2')
   consultas = st.text_area('Introduce una consulta por línea')
   country = st.text_input('Country', value='es')
 
