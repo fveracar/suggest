@@ -5,6 +5,10 @@ from bs4 import BeautifulSoup
 from string import ascii_lowercase
 import json 
 
+st.set_page_config(
+    page_title='Suggest | Vocento',
+)
+
 #Get input from users
 with st.form('my_form'):
   consultas = st.text_area('Introduce una consulta por línea')
