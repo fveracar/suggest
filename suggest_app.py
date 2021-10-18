@@ -5,11 +5,6 @@ from bs4 import BeautifulSoup
 from string import ascii_lowercase
 import json 
 
-st.set_page_config(
-    page_title='Suggest | Vocento',
-    layout="wide",  #que ocupe el ancho completo
-)
-
 @st.cache
 def convert_df(df):
   return df.to_csv().encode('utf-8')
